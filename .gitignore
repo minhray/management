@@ -1,3 +1,5 @@
 .idea
 db.sqlite3
 venv
+/log
+*.pyc
