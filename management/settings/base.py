@@ -178,7 +178,7 @@ LOGGING = {
         'default': {
             'level': level,
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': syslog_address + 'blog.log',
+            'filename': syslog_address + 'sword.log',
             'formatter': 'syslog_format',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
