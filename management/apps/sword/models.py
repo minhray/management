@@ -1,5 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 # Create your models here.
@@ -26,6 +28,58 @@ class AbstractUser(AbstractBaseUser):
 
     def clean(self):
         super().clean()
+
+
+class GenericImage(TimestampedModel):
+    image = models.URLField()
+    content_type = models.ForeignKey(
+        ContentType,
+        db_constraint=False,
+        on_delete=models.DO_NOTHING,
+    )
+    status = models.CharField(
+        default='active',
+        max_length=25
+    )
+    object_id = models.PositiveIntegerField()
+    image_content = GenericForeignKey()
+
+    class Meta:
+        db_table = 'sword_generic_image'
+
+
+class GenericType(TimestampedModel):
+    type = models.CharField(
+        max_length=40
+    )
+    group = models.CharField(
+        max_length=40
+    )
+
+    class Meta:
+        db_table = 'sword_generic_type'
+        unique_together = [
+            'type', 'group'
+        ]
+
+
+class GenericValue(TimestampedModel):
+    generic_type = models.ForeignKey(
+        GenericType,
+        db_constraint=False,
+        on_delete=models.CASCADE,
+        related_name='general_value'
+    )
+    value = models.CharField(
+        max_length=40
+    )
+    status = models.CharField(
+        default='active',
+        max_length=20
+    )
+
+    class Meta:
+        db_table = 'sword_generic_value'
 
 
 class User(AbstractUser, TimestampedModel):
@@ -134,6 +188,10 @@ class Device(TimestampedModel):
     position = models.ManyToManyField(
         Position,
         through="PositionDeviceShip",
+    )
+    images = GenericRelation(
+        GenericImage,
+        related_name='device'
     )
 
 
