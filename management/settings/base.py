@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import datetime
 import os
 import platform
 from pathlib import Path
@@ -50,6 +51,11 @@ CUSTOM_APPS = [
     'sword',
     'core',
 ]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=365),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=365),
+}
 
 # Application definition
 
@@ -142,6 +148,9 @@ STATIC_URL = '/static/'
 MIGRATE_APPS = [
     'sword'
 ]
+
+AUTHENTICATION_BACKENDS = ('sword.auth.SocialBackend', 'sword.auth.CommonBackend')
+
 
 APPEND_SLASH = False
 
