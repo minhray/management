@@ -4,3 +4,4 @@ venv
 /log
 *.pyc
 management/apps/sword/dev_migrations/*
+.DS_Store

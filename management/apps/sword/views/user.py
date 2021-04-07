@@ -103,3 +103,8 @@ class UserInfoViewSet(GeneralViewSet, CommonListMixin):
     pagination_class = TenPagination
     authentication_classes = [CustomizedJWTAuthentication]
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, **kwargs):
+        return self.queryset.filter(
+            pk=kwargs['request'].user.id
+        )
