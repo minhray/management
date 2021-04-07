@@ -90,6 +90,92 @@ class AccountConfirmation(TimestampedModel):
     class Meta:
         db_table = 'sword_account_confirmation'
 
+
+class Position(models.Model):
+    # todo 职位不同提供了不同的功能条件
+    pass
+
+
+class WareHouse(models.Model):
+    units = models.IntegerField(
+        default=0
+    )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+    volume = models.DecimalField(
+        max_digits=10,
+        decimal_places=4
+    )
+
+    class Meta:
+        db_table = 'sword_ware_house'
+
+
+class WareHouseLog(models.Model):
+    ware_house = models.ForeignKey(
+        WareHouse,
+        db_constraint=False,
+        on_delete=models.DO_NOTHING,
+        related_name='log'
+    )
+
+    class Meta:
+        db_table = 'sword_ware_house_log'
+
+
+class Device(TimestampedModel):
+    ware_house = models.ManyToManyField(
+        WareHouse,
+        through="WareHouseDeviceShip"
+    )
+    position = models.ManyToManyField(
+        Position,
+        through="PositionDeviceShip",
+    )
+
+
+class WareHouseDeviceShip(TimestampedModel):
+    ware_house = models.ForeignKey(
+        WareHouse,
+        db_constraint=False,
+        on_delete=models.CASCADE
+    )
+    device = models.ForeignKey(
+        Device,
+        db_constraint=False,
+        on_delete=models.CASCADE,
+    )
+    status = models.CharField(
+        default='laid-up',
+        max_length=20
+    )
+
+    class Meta:
+        db_table = 'sword_ware_house_device_ship'
+
+
+class PositionDeviceShip(TimestampedModel):
+    position = models.ForeignKey(
+        Position,
+        db_constraint=False,
+        on_delete=models.CASCADE,
+    )
+    device = models.ForeignKey(
+        Device,
+        db_constraint=False,
+        on_delete=models.CASCADE,
+    )
+    status = models.CharField(
+        default='active',
+        max_length=20
+    )
+
+    class Meta:
+        db_table = 'sword_position_device_ship'
+
 # todo 设计用户 =>
 #
 # todo 角色模块 => 不同的角色可以进行不同的操作
