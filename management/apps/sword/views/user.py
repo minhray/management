@@ -10,7 +10,7 @@ from core.errcode import PARAM_ERROR, TOKEN_INFO, WE_CHAT_ERROR, USER_INFO
 from sword.models import User, UserSocialInfo
 from sword.serializsers import UserSerializers
 from core.utils.addtinal_rest_framework import CustomizedJWTAuthentication, TenPagination, CustomizedJsonResponse, \
-    GeneralViewSet, CommonListMixin
+    GeneralViewSet, CommonListMixin, CommonPutMixin
 
 
 class SocialInfoLoginViewSets(GenericViewSet):
@@ -92,7 +92,7 @@ class SocialInfoLoginViewSets(GenericViewSet):
         )
 
 
-class UserInfoViewSet(GeneralViewSet, CommonListMixin):
+class UserInfoViewSet(GeneralViewSet, CommonListMixin, CommonPutMixin):
     queryset = User.objects.prefetch_related(
         Prefetch('social_info', queryset=UserSocialInfo.objects.filter(
             provider='Phone'

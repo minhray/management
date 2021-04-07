@@ -15,10 +15,10 @@ class UserSocialInfoSerializer(serializers.ModelSerializer):
 
 class UserSerializers(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(
-        format=time_format
+        format=time_format, read_only=True
     )
     modification_date = serializers.DateTimeField(
-        format=time_format
+        format=time_format, read_only=True
     )
     social_info = UserSocialInfoSerializer(many=True, read_only=True)
 
@@ -28,5 +28,5 @@ class UserSerializers(serializers.ModelSerializer):
             'id', 'creation_date', 'display_name', 'avatar', 'modification_date', 'social_info'
         ]
         read_only_fields = [
-            'creation_date', 'modification_date'
+            'id'
         ]

@@ -85,11 +85,11 @@ class CommonPutMixin:
             return CustomizedJsonResponse(
                 PARAM_ERROR, http_status=status.HTTP_404_NOT_FOUND
             )
-        serializer = self.get_serializer_class()(data=data, instance=instance, partial=True)
-        serializer.is_valid(raise_excetion=True)
-        serializer.save()
+        serializer = self.get_serializer_class()(data=data)
+        serializer.is_valid(raise_exception=True)
+        instance.update(**serializer.data)
         return CustomizedJsonResponse(
-            self.get_errcode(), data=serializer.data
+            self.get_errcode()
         )
 
 
