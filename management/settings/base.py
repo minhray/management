@@ -66,7 +66,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-] + THIRD_PARTY_APPS + CUSTOM_APPS
+]
+
+INSTALLED_APPS += CUSTOM_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,8 +87,7 @@ AUTH_USER_MODEL = 'sword.User'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -140,7 +141,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -152,7 +153,6 @@ MIGRATE_APPS = [
 ]
 
 AUTHENTICATION_BACKENDS = ('sword.auth.SocialBackend', 'sword.auth.CommonBackend')
-
 
 APPEND_SLASH = False
 
