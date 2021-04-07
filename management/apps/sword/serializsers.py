@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from sword.models import User, UserSocialInfo
 
+time_format = "%Y年-%m月-%d日  %H:%M:%S"
+
 
 class UserSocialInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,6 +14,12 @@ class UserSocialInfoSerializer(serializers.ModelSerializer):
 
 
 class UserSerializers(serializers.ModelSerializer):
+    creation_date = serializers.DateTimeField(
+        format=time_format
+    )
+    modification_date = serializers.DateTimeField(
+        format=time_format
+    )
     social_info = UserSocialInfoSerializer(many=True, read_only=True)
 
     class Meta:
