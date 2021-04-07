@@ -1,7 +1,7 @@
 from django.contrib.auth.backends import ModelBackend
 from rest_framework.exceptions import AuthenticationFailed
 
-from management.apps.sword.models import UserSocialInfo
+from sword.models import UserSocialInfo
 
 
 class SocialBackend(ModelBackend):

@@ -38,7 +38,9 @@ class SocialInfoLoginViewSets(GenericViewSet):
 
         user = authenticate(request=request, open_id=open_id, phone=phone, password=password, provider=provider)
 
-        if user is None or open_id is not None or (phone is not None and password is not None):
+        if user is not None:
+            pass
+        elif open_id is not None or (phone is not None and password is not None):
             display_name = data.get('display_name', None)
             if display_name is None or (phone is not None and UserSocialInfo.objects.filter(
                     provider='Phone',
@@ -78,7 +80,7 @@ class SocialInfoLoginViewSets(GenericViewSet):
             user
         )
         # 发送登录信号
-        user_logged_in.send(sender=user, request=request)
+        user_logged_in.send(sender=user.__class__, request=request, user=user)
 
         data = {
             'access_token': "Bearer {}".format(str(token.access_token)),
