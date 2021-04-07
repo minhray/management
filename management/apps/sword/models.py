@@ -150,7 +150,7 @@ class Position(models.Model):
     pass
 
 
-class WareHouse(models.Model):
+class Warehouse(models.Model):
     units = models.IntegerField(
         default=0
     )
@@ -165,25 +165,25 @@ class WareHouse(models.Model):
     )
 
     class Meta:
-        db_table = 'sword_ware_house'
+        db_table = 'sword_warehouse'
 
 
-class WareHouseLog(models.Model):
-    ware_house = models.ForeignKey(
-        WareHouse,
+class WarehouseLog(models.Model):
+    warehouse = models.ForeignKey(
+        Warehouse,
         db_constraint=False,
         on_delete=models.DO_NOTHING,
         related_name='log'
     )
 
     class Meta:
-        db_table = 'sword_ware_house_log'
+        db_table = 'sword_warehouse_log'
 
 
 class Device(TimestampedModel):
-    ware_house = models.ManyToManyField(
-        WareHouse,
-        through="WareHouseDeviceShip"
+    warehouse = models.ManyToManyField(
+        Warehouse,
+        through="WarehouseDeviceShip"
     )
     position = models.ManyToManyField(
         Position,
@@ -195,9 +195,9 @@ class Device(TimestampedModel):
     )
 
 
-class WareHouseDeviceShip(TimestampedModel):
-    ware_house = models.ForeignKey(
-        WareHouse,
+class WarehouseDeviceShip(TimestampedModel):
+    warehouse = models.ForeignKey(
+        Warehouse,
         db_constraint=False,
         on_delete=models.CASCADE
     )
@@ -212,7 +212,7 @@ class WareHouseDeviceShip(TimestampedModel):
     )
 
     class Meta:
-        db_table = 'sword_ware_house_device_ship'
+        db_table = 'sword_warehouse_device_ship'
 
 
 class PositionDeviceShip(TimestampedModel):
