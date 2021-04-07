@@ -97,7 +97,7 @@ class UserInfoViewSet(GeneralViewSet, CommonListMixin, CommonPutMixin):
         Prefetch('social_info', queryset=UserSocialInfo.objects.filter(
             provider='Phone'
         ).all())
-    ).all()
+    ).order_by('-id').all()
     serializer_class = UserSerializers
     errcode = USER_INFO
     pagination_class = TenPagination
@@ -105,6 +105,11 @@ class UserInfoViewSet(GeneralViewSet, CommonListMixin, CommonPutMixin):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self, **kwargs):
-        return self.queryset.filter(
+        value_list = [
+            'id', 'creation_date', 'display_name', 'avatar', 'modification_date'
+        ]
+        return self.queryset.only(
+            *value_list
+        ).filter(
             pk=kwargs['request'].user.id
         )
