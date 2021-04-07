@@ -1,5 +1,6 @@
 from django.contrib.auth import user_logged_in, authenticate
 from django.contrib.auth.hashers import make_password
+from django.db.models import Prefetch
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import GenericViewSet
@@ -91,7 +92,9 @@ class SocialInfoLoginViewSets(GenericViewSet):
 
 class UserInfoViewSet(GeneralViewSet, CommonListMixin):
     queryset = User.objects.prefetch_related(
-        'social_info'
+        Prefetch('social_info', queryset=UserSocialInfo.objects.filter(
+            provider='Phone'
+        ).all())
     ).all()
     serializer_class = UserSerializers
     errcode = USER_INFO
