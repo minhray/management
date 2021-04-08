@@ -87,7 +87,7 @@ class CommonPutMixin:
             )
         serializer = self.get_serializer_class()(data=data)
         serializer.is_valid(raise_exception=True)
-        instance.update(**serializer.data)
+        instance.update(**serializer.validated_data)
         return CustomizedJsonResponse(
             self.get_errcode()
         )
