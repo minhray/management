@@ -133,6 +133,9 @@ class UserSocialInfo(TimestampedModel):
     class Meta:
         db_table = 'sword_user_social_info'
 
+    def __str__(self):
+        return self.uid
+
 
 class AccountConfirmation(TimestampedModel):
     user = models.ForeignKey(

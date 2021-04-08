@@ -6,9 +6,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from core.errcode import PARAM_ERROR, TOKEN_INFO, WE_CHAT_ERROR, USER_INFO
+from core.errcode import PARAM_ERROR, TOKEN_INFO, USER_INFO
 from sword.models import User, UserSocialInfo
-from sword.serializsers import UserSerializers
+from sword.serializsers import UserSerializers, UserSocialInfoSerializer
 from core.utils.addtinal_rest_framework import CustomizedJWTAuthentication, TenPagination, CustomizedJsonResponse, \
     GeneralViewSet, CommonListMixin, CommonPutMixin
 
@@ -22,24 +22,30 @@ class SocialInfoLoginViewSets(GenericViewSet):
 
     def create(self, request):
         data = request.data
-        js_code = data.get('code', None)
+        # js_code = data.get('code', None)
         open_id = None
-        if js_code is not None:
-            # open_id = we_chat.code2session(js_code)
-            open_id = js_code
-            if open_id is None:
-                return CustomizedJsonResponse(
-                    WE_CHAT_ERROR, http_status=status.HTTP_400_BAD_REQUEST
-                )
+        # if js_code is not None:
+        #     open_id = we_chat.code2session(js_code)
+        #     if open_id is None:
+        #         return CustomizedJsonResponse(
+        #             WE_CHAT_ERROR, http_status=status.HTTP_400_BAD_REQUEST
+        #         )
 
         phone = data.get('phone', None)
+        provider = data.get('provider', 'WeChat')
+        if open_id is not None:
+            data['uid'] = open_id
+            data['provider'] = provider
+        elif phone is not None:
+            data['uid'] = phone
+            data['provider'] = 'Phone'
+
         password = data.get('password', None)
         if (phone is not None and password is None) or (phone is None and password is not None):
             return CustomizedJsonResponse(
                 PARAM_ERROR, http_status=status.HTTP_400_BAD_REQUEST
             )
 
-        provider = data.get('provider', 'WeChat')
         user = authenticate(request=request, open_id=open_id, phone=phone, password=password, provider=provider)
 
         if user is not None:
@@ -52,34 +58,16 @@ class SocialInfoLoginViewSets(GenericViewSet):
                 return CustomizedJsonResponse(
                     PARAM_ERROR, data='密码错误', http_status=status.HTTP_400_BAD_REQUEST
                 )
-
-            display_name = data.get('display_name', None)
-            if display_name is None:
-                return CustomizedJsonResponse(
-                    PARAM_ERROR, data='未输入用户名', http_status=status.HTTP_400_BAD_REQUEST
-                )
-
+            social_info_serializer = UserSocialInfoSerializer(data=data, context=self.get_serializer_context())
+            social_info_serializer.is_valid(raise_exception=True)
             if password is not None:
-                password = make_password(password)
+                data['password'] = make_password(password)
 
-            user = self.queryset.create(
-                display_name=display_name,
-                avatar=None,
-                password=password
-            )
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
 
-            if open_id is not None:
-                UserSocialInfo.objects.create(
-                    user=user,
-                    uid=open_id,
-                    provider=provider
-                )
-            elif phone is not None:
-                UserSocialInfo.objects.create(
-                    user=user,
-                    uid=phone,
-                    provider='Phone'
-                )
+            social_info_serializer.save(user=user)
 
         # 生成token
         token = RefreshToken.for_user(

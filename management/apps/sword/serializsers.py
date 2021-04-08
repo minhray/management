@@ -20,13 +20,38 @@ class UserSerializers(serializers.ModelSerializer):
     modification_date = serializers.DateTimeField(
         format=time_format, read_only=True
     )
-    social_info = UserSocialInfoSerializer(many=True, read_only=True)
+    phones = serializers.StringRelatedField(many=True, source='social_info', read_only=True)
 
     class Meta:
         model = User
         fields = [
-            'id', 'creation_date', 'display_name', 'avatar', 'modification_date', 'social_info'
+            'id', 'creation_date', 'display_name', 'avatar', 'modification_date', 'phones', 'password'
         ]
         read_only_fields = [
             'id'
         ]
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            }
+        }
+
+
+class GenericImageSerializer(serializers.ModelSerializer):
+    pass
+
+
+class PositionSerializer(serializers.ModelSerializer):
+    pass
+
+
+class DeviceSerializer(serializers.ModelSerializer):
+    pass
+
+
+class WarehouseSerializer(serializers.ModelSerializer):
+    pass
+
+
+class WarehouseLogSerializer(serializers.ModelSerializer):
+    pass
