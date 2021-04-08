@@ -34,21 +34,31 @@ class SocialInfoLoginViewSets(GenericViewSet):
 
         phone = data.get('phone', None)
         password = data.get('password', None)
-        provider = data.get('provider', 'WeChat')
+        if (phone is not None and password is None) or (phone is None and password is not None):
+            return CustomizedJsonResponse(
+                PARAM_ERROR, http_status=status.HTTP_400_BAD_REQUEST
+            )
 
+        provider = data.get('provider', 'WeChat')
         user = authenticate(request=request, open_id=open_id, phone=phone, password=password, provider=provider)
 
         if user is not None:
             pass
-        elif open_id is not None or (phone is not None and password is not None):
-            display_name = data.get('display_name', None)
-            if display_name is None or (phone is not None and UserSocialInfo.objects.filter(
+        else:
+            if (phone is not None and UserSocialInfo.objects.filter(
                     provider='Phone',
                     uid=phone
             ).exists()):
                 return CustomizedJsonResponse(
-                    PARAM_ERROR, http_status=status.HTTP_400_BAD_REQUEST
+                    PARAM_ERROR, data='密码错误', http_status=status.HTTP_400_BAD_REQUEST
                 )
+
+            display_name = data.get('display_name', None)
+            if display_name is None:
+                return CustomizedJsonResponse(
+                    PARAM_ERROR, data='未输入用户名', http_status=status.HTTP_400_BAD_REQUEST
+                )
+
             if password is not None:
                 password = make_password(password)
 
@@ -70,10 +80,6 @@ class SocialInfoLoginViewSets(GenericViewSet):
                     uid=phone,
                     provider='Phone'
                 )
-        else:
-            return CustomizedJsonResponse(
-                PARAM_ERROR, http_status=status.HTTP_400_BAD_REQUEST
-            )
 
         # 生成token
         token = RefreshToken.for_user(

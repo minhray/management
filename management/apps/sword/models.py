@@ -26,9 +26,6 @@ class AbstractUser(AbstractBaseUser):
         verbose_name_plural = 'users'
         abstract = True
 
-    def clean(self):
-        super().clean()
-
 
 class GenericImage(TimestampedModel):
     image = models.URLField()
