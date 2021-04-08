@@ -79,6 +79,18 @@ class GenericValue(TimestampedModel):
         db_table = 'sword_generic_value'
 
 
+class Position(TimestampedModel):
+    name = models.CharField(
+        max_length=25
+    )
+    description = models.CharField(
+        max_length=400
+    )
+    department = models.CharField(
+        max_length=45
+    )
+
+
 class User(AbstractUser, TimestampedModel):
     # user 登录表 查看用户登录有效状态绑定多表关系
     display_name = models.CharField(
@@ -88,6 +100,13 @@ class User(AbstractUser, TimestampedModel):
     avatar = models.URLField(
         help_text="用户头像",
         null=True
+    )
+    position = models.ForeignKey(
+        Position,
+        db_constraint=False,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        related_name='user'
     )
     USERNAME_FIELD = 'id'
 
@@ -142,12 +161,10 @@ class AccountConfirmation(TimestampedModel):
         db_table = 'sword_account_confirmation'
 
 
-class Position(models.Model):
-    # todo 职位不同提供了不同的功能条件
-    pass
-
-
 class Warehouse(models.Model):
+    name = models.CharField(
+        max_length=45
+    )
     units = models.IntegerField(
         default=0
     )
@@ -182,13 +199,22 @@ class Device(TimestampedModel):
         Warehouse,
         through="WarehouseDeviceShip"
     )
-    position = models.ManyToManyField(
-        Position,
-        through="PositionDeviceShip",
+    user = models.ManyToManyField(
+        User,
+        through="UserDeviceShip",
     )
     images = GenericRelation(
         GenericImage,
         related_name='device'
+    )
+    group = models.CharField(
+        max_length=45
+    )
+    name = models.CharField(
+        max_length=45
+    )
+    inventory = models.JSONField(
+        default={}
     )
 
 
@@ -212,9 +238,9 @@ class WarehouseDeviceShip(TimestampedModel):
         db_table = 'sword_warehouse_device_ship'
 
 
-class PositionDeviceShip(TimestampedModel):
-    position = models.ForeignKey(
-        Position,
+class UserDeviceShip(TimestampedModel):
+    user = models.ForeignKey(
+        User,
         db_constraint=False,
         on_delete=models.CASCADE,
     )
@@ -229,16 +255,4 @@ class PositionDeviceShip(TimestampedModel):
     )
 
     class Meta:
-        db_table = 'sword_position_device_ship'
-
-# todo 设计用户 =>
-#
-# todo 角色模块 => 不同的角色可以进行不同的操作
-
-# todo 仓库模块 =>
-
-# todo 机器模块 =>
-
-# todo 操作模块 =>
-
-# todo
+        db_table = 'sword_user_device_ship'
