@@ -182,12 +182,21 @@ class Warehouse(models.Model):
         db_table = 'sword_warehouse'
 
 
-class WarehouseLog(models.Model):
+class WarehouseLog(TimestampedModel):
+    user = models.ForeignKey(
+        User,
+        db_constraint=False,
+        on_delete=models.DO_NOTHING,
+        related_name='warehouse_log'
+    )
     warehouse = models.ForeignKey(
         Warehouse,
         db_constraint=False,
         on_delete=models.DO_NOTHING,
         related_name='log'
+    )
+    detail = models.JSONField(
+        default=dict
     )
 
     class Meta:
@@ -195,13 +204,11 @@ class WarehouseLog(models.Model):
 
 
 class Device(TimestampedModel):
-    warehouse = models.ManyToManyField(
+    warehouse = models.ForeignKey(
         Warehouse,
-        through="WarehouseDeviceShip"
-    )
-    user = models.ManyToManyField(
-        User,
-        through="UserDeviceShip",
+        db_constraint=False,
+        on_delete=models.DO_NOTHING,
+        related_name='device'
     )
     images = GenericRelation(
         GenericImage,
@@ -214,45 +221,31 @@ class Device(TimestampedModel):
         max_length=45
     )
     inventory = models.JSONField(
-        default={}
-    )
-
-
-class WarehouseDeviceShip(TimestampedModel):
-    warehouse = models.ForeignKey(
-        Warehouse,
-        db_constraint=False,
-        on_delete=models.CASCADE
-    )
-    device = models.ForeignKey(
-        Device,
-        db_constraint=False,
-        on_delete=models.CASCADE,
-    )
-    status = models.CharField(
-        default='laid-up',
-        max_length=20
-    )
-
-    class Meta:
-        db_table = 'sword_warehouse_device_ship'
-
-
-class UserDeviceShip(TimestampedModel):
-    user = models.ForeignKey(
-        User,
-        db_constraint=False,
-        on_delete=models.CASCADE,
-    )
-    device = models.ForeignKey(
-        Device,
-        db_constraint=False,
-        on_delete=models.CASCADE,
+        default=dict
     )
     status = models.CharField(
         default='active',
-        max_length=20
+        max_length=25
+    )
+
+
+class UserRecord(TimestampedModel):
+    user = models.ForeignKey(
+        User,
+        db_constraint=False,
+        on_delete=models.DO_NOTHING,
+        related_name='record'
+    )
+    device = models.ForeignKey(
+        Device,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
+        related_name='user_record'
+    )
+    status = models.CharField(
+        default='active',
+        max_length=25
     )
 
     class Meta:
-        db_table = 'sword_user_device_ship'
+        db_table = 'sword_user_record'
