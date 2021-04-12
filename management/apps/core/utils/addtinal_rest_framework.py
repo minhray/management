@@ -135,6 +135,8 @@ class GeneralViewSet(GenericViewSet):
 
     def get_page_data(self, request, instance, serializer=None):
         page = self.paginator
+        if page is None:
+            return self.get_serializer(instance=instance, context=self.get_serializer_context(), many=True).data
         pages = page.paginate_queryset(queryset=instance, request=request, view=self)
         if serializer is None:
             serializers = self.get_serializer(instance=pages, many=True)
