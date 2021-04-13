@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from sword.models import User, UserSocialInfo
+from sword.models import User, UserSocialInfo, Device
 
 time_format = "%Y年-%m月-%d日  %H:%M:%S"
 
@@ -46,7 +46,10 @@ class PositionSerializer(serializers.ModelSerializer):
 
 
 class DeviceSerializer(serializers.ModelSerializer):
-    pass
+
+    class Meta:
+        model = Device
+        fields = '__all__'
 
 
 class WarehouseSerializer(serializers.ModelSerializer):

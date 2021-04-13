@@ -164,55 +164,7 @@ class AccountConfirmation(TimestampedModel):
         db_table = 'sword_account_confirmation'
 
 
-class Warehouse(models.Model):
-    name = models.CharField(
-        max_length=45
-    )
-    units = models.IntegerField(
-        default=0
-    )
-    amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
-    volume = models.DecimalField(
-        max_digits=10,
-        decimal_places=4
-    )
-
-    class Meta:
-        db_table = 'sword_warehouse'
-
-
-class WarehouseLog(TimestampedModel):
-    user = models.ForeignKey(
-        User,
-        db_constraint=False,
-        on_delete=models.DO_NOTHING,
-        related_name='warehouse_log'
-    )
-    warehouse = models.ForeignKey(
-        Warehouse,
-        db_constraint=False,
-        on_delete=models.DO_NOTHING,
-        related_name='log'
-    )
-    detail = models.JSONField(
-        default=dict
-    )
-
-    class Meta:
-        db_table = 'sword_warehouse_log'
-
-
 class Device(TimestampedModel):
-    warehouse = models.ForeignKey(
-        Warehouse,
-        db_constraint=False,
-        on_delete=models.DO_NOTHING,
-        related_name='device'
-    )
     images = GenericRelation(
         GenericImage,
         related_name='device'
@@ -222,9 +174,6 @@ class Device(TimestampedModel):
     )
     name = models.CharField(
         max_length=45
-    )
-    inventory = models.JSONField(
-        default=dict
     )
     status = models.CharField(
         default='active',
